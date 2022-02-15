@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+    "crypto/tls"
 
 	"github.com/TheHippo/podcastindex"
 	"github.com/akhilrex/podgrab/db"
@@ -716,18 +717,27 @@ func makeQuery(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+    resp, err := (&http.Client{
+            Transport: &http.Transport{
+                    TLSClientConfig: &tls.Config{
+                            InsecureSkipVerify: true,
+                    },
+                    Proxy: http.ProxyFromEnvironment,
+            }}).Do(req)
+
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+    if resp != nil{
+            defer resp.Body.Close()
+    }
 	fmt.Println("Response status:", resp.Status)
 	body, err := ioutil.ReadAll(resp.Body)
 
 	return body, nil
-
 }
+
 func GetSearchFromGpodder(pod model.GPodcast) *model.CommonSearchResultModel {
 	p := new(model.CommonSearchResultModel)
 	p.URL = pod.URL

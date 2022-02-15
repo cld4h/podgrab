@@ -26,6 +26,7 @@ func main() {
 	} else {
 		db.Migrate()
 	}
+    //gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.Use(setupSettings())
@@ -203,7 +204,8 @@ func main() {
 	go assetEnv()
 	go intiCron()
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+    addr := os.Getenv("BIND_ADDR")
+    r.Run(addr) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
 }
 func setupSettings() gin.HandlerFunc {
@@ -237,5 +239,6 @@ func intiCron() {
 func assetEnv() {
 	log.Println("Config Dir: ", os.Getenv("CONFIG"))
 	log.Println("Assets Dir: ", os.Getenv("DATA"))
+    log.Println("Bind Address: ", os.Getenv("BIND_ADDR"))
 	log.Println("Check Frequency (mins): ", os.Getenv("CHECK_FREQUENCY"))
 }
