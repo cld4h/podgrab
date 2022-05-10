@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{.title}} - PodGrab</title>
     {{template "commoncss" .}}
-    
+
     <style>
       /*
   1. Base
@@ -94,7 +94,7 @@ div#amplitude-right {
       background: inherit;
       width: calc( 100% - 110px ); }
       div#amplitude-right div.song div.song-meta-data span.song-title {
-        
+
         font-size: 16px;
         display: block;
         font-weight: 300;
@@ -103,7 +103,7 @@ div#amplitude-right {
         background: inherit;
         text-overflow: ellipsis; }
         div#amplitude-right div.song div.song-meta-data span.song-date {
-        
+
         font-size: 12px;
         display: block;
         font-weight: 300;
@@ -112,7 +112,7 @@ div#amplitude-right {
         background: inherit;
         text-overflow: ellipsis; }
       div#amplitude-right div.song div.song-meta-data span.song-artist {
-       
+
         font-size: 14px;
         font-weight: bold;
         text-transform: uppercase;
@@ -367,7 +367,7 @@ div#control-container {
       div#control-container div#repeat-container div#shuffle.amplitude-shuffle-on {
         background: url("/webassets/shuffle-on.svg"); }
         div#control-container div#repeat-container .speed {
-     
+
       cursor: pointer;
       font-size: 23px;
       float:left;
@@ -645,7 +645,7 @@ div#meta-container {
 div.amplitude-wave-form{
     margin-top: -14px;
 }
-      
+
  div.amplitude-wave-form svg{
       stroke: #00a0ff;
       height: 50px;
@@ -684,12 +684,12 @@ div#large-visualization{
 
         <!-- Amplitude Player -->
         <div id="amplitude-player">
-  
+
           <!-- Left Side Player -->
           <div id="amplitude-left">
             <img data-amplitude-song-info="cover_art_url" class="album-art"/>
             <div class="amplitude-visualization" id="large-visualization">
-  
+
               </div>
             <div id="player-left-bottom">
               <div id="time-container">
@@ -697,7 +697,7 @@ div#large-visualization{
                   <span class="amplitude-current-hours" ></span>:<span class="amplitude-current-minutes" ></span>:<span class="amplitude-current-seconds"></span>
                 </span>
                 <div id="progress-container">
-              
+
                   <input type="range" class="amplitude-song-slider"/>
                   <progress id="song-played-progress" class="amplitude-song-played-progress"></progress>
                   <progress id="song-buffered-progress" class="amplitude-buffered-progress" value="0"></progress>
@@ -706,14 +706,14 @@ div#large-visualization{
                   <span class="amplitude-duration-hours"></span>:<span class="amplitude-duration-minutes"></span>:<span class="amplitude-duration-seconds"></span>
                 </span>
               </div>
-  
+
               <div id="control-container">
                 <div id="repeat-container">
                   <div class="amplitude-repeat" id="repeat"></div>
                   <div class="amplitude-shuffle amplitude-shuffle-off" id="shuffle"></div>
                   <div class="speed" @click="changeSpeed">${speed}X</div>
                 </div>
-  
+
                 <div id="central-control-container">
                   <div id="central-controls">
                     <div class="amplitude-prev" id="previous"></div>
@@ -721,7 +721,7 @@ div#large-visualization{
                     <div class="amplitude-next" id="next"></div>
                   </div>
                 </div>
-  
+
                 <div id="volume-container">
                   <div class="volume-controls">
                     <div class="amplitude-mute amplitude-not-muted"></div>
@@ -731,10 +731,10 @@ div#large-visualization{
                   <div class="amplitude-shuffle amplitude-shuffle-off" id="shuffle-right"></div>
                 </div>
               </div>
-  
+
               <div id="meta-container">
                 <span data-amplitude-song-info="name" class="song-name"></span>
-  
+
                 <div class="song-artist-album">
                   <span data-amplitude-song-info="artist"></span>
                   <span data-amplitude-song-info="album"></span>
@@ -747,14 +747,14 @@ div#large-visualization{
             </div>
           </div>
           <!-- End Left Side Player -->
-  
+
           <!-- Right Side Player -->
           <div id="amplitude-right">
-          
+
             <div  v-for="(item,index) in allItems"  class="song amplitude-song-container amplitude-play-pause" :data-amplitude-song-index="index" :title="item.Title">
               <div class="song-now-playing-icon-container">
                 <div class="play-button-container">
-  
+
                 </div>
                 <img class="now-playing" src="/webassets//now-playing.svg"/>
               </div>
@@ -762,21 +762,21 @@ div#large-visualization{
                 <span class="song-title">${item.Title}</span>
                 <span class="song-date">${getFormattedLastEpisodeDate(item)}</span>
                 <span class="song-artist">${item.Podcast.Title}</span>
-               
+
               </div>
               <span class="song-duration">${ formatDuration(item.Duration)}</span>
             </div>
-           
+
           </div>
           <!-- End Right Side Player -->
         </div>
         <!-- End Amplitdue Player -->
-        
+
       </div>
     </div>
     </div>
-     
-   
+
+
     </div>
 
     {{template "scripts"}}
@@ -796,8 +796,8 @@ div#large-visualization{
       }
     </style>
     <script>
-      
-    
+
+
         var app = new Vue({
         delimiters: ["${", "}"],
         el: "#app",
@@ -811,9 +811,9 @@ div#large-visualization{
         },
         methods:{
           removeSongTime(songId){
-          
-          if(localStorage){                              
-            var songTimes=localStorage.songTimes;                 
+
+          if(localStorage){
+            var songTimes=localStorage.songTimes;
             if(!songTimes){
                 songTimes={};
             }else{
@@ -821,31 +821,31 @@ div#large-visualization{
              }
              if(songTimes.hasOwnProperty(songId)){
             delete songTimes[songId];
-            localStorage.songTimes=JSON.stringify(songTimes);  
+            localStorage.songTimes=JSON.stringify(songTimes);
              }
-       
+
           }
         }
           ,saveSongTime(songId,time){
-          
-            if(localStorage){                              
-              var songTimes=localStorage.songTimes;                 
+
+            if(localStorage){
+              var songTimes=localStorage.songTimes;
               if(!songTimes){
                   songTimes={};
               }else{
                   songTimes= JSON.parse(localStorage.songTimes);
                }
               songTimes[songId]=time;
-              localStorage.songTimes=JSON.stringify(songTimes);  
-             
-                      
+              localStorage.songTimes=JSON.stringify(songTimes);
+
+
             }
           },
           getSavedSongTime(){
-           
+
             if(localStorage){
-              var song=Amplitude.getActiveSongMetadata();  
-              var songTimes=localStorage.songTimes;                 
+              var song=Amplitude.getActiveSongMetadata();
+              var songTimes=localStorage.songTimes;
               if(!songTimes){
                   songTimes={};
               }else{
@@ -854,7 +854,7 @@ div#large-visualization{
                if(songTimes.hasOwnProperty(song.id)){
                  return songTimes[song.id];
                }
-               
+
             }
             return 0;
           },
@@ -879,7 +879,7 @@ div#large-visualization{
                     id:x.ID,
                     name:x.Title,
                     url:"/podcastitems/"+x.ID+"/file",
-                    cover_art_url:image,
+                    cover_art_url:"/podcastitems/"+x.ID+"/image",
                     artist:x.Podcast.Title,
                     summary:x.Summary,
                     album: new Date(x.PubDate.substr(0,10)).toDateString()
@@ -906,7 +906,7 @@ div#large-visualization{
                   hrs = mins / 60
                   mins = mins % 60
                 }
-              
+
                 hrs=Math.floor(hrs)
                 if (hrs > 0) {
                   return `${hrs}:${mins}:${secs}`
@@ -922,7 +922,7 @@ div#large-visualization{
         updated(){
           Amplitude.bindNewElements();
         },
-       
+
         created(){
           const self=this;
           this.socket= getWebsocketConnection(function(event){
@@ -960,20 +960,20 @@ div#large-visualization{
                 }
               },
                 'timeupdate':function(){
-                    
+
                     var secs=Math.floor(Amplitude.getSongPlayedSeconds());
                     if(secs%10===0){
-                      song=Amplitude.getActiveSongMetadata();    
+                      song=Amplitude.getActiveSongMetadata();
                       if(Amplitude.getSongPlayedPercentage()>20){
                           markSongAsPlayed(song.id)
                       }
                       if(Amplitude.getSongPlayedPercentage()>95){
                           self.removeSongTime(song.id)
                       }else{
-                                         
+
                         self.saveSongTime(song.id,secs);
-                     }      
-                    }      
+                     }
+                    }
                 },
                   'volumechange':function(){
                         volume=Amplitude.getVolume();
@@ -982,7 +982,7 @@ div#large-visualization{
                         }
                   },
                   'play': function(){
-                  
+
                       document.getElementById('album-art').style.visibility = 'hidden';
                       document.getElementById('large-visualization').style.visibility = 'visible';
                   },
@@ -992,7 +992,7 @@ div#large-visualization{
                       document.getElementById('large-visualization').style.visibility = 'hidden';
                   },
                   'initialized':function(){
-                   
+
                     if(localStorage && localStorage.speed){
                       self.speed=parseFloat(localStorage.speed);
                     }
@@ -1002,7 +1002,7 @@ div#large-visualization{
                     if(time>0){
                         Amplitude.skipTo(time,0)
                     }
-                                   
+
                   },
                   'ended':function(){
                     console.log(Amplitude.getActiveSongMetadata());
@@ -1012,7 +1012,7 @@ div#large-visualization{
               sample_rate: 50
             }
           });
-        
+
         },
         data:{
           speed:1,
@@ -1022,7 +1022,7 @@ div#large-visualization{
           allItems: {{ .podcastItems }},
         }
         });
-       
+
 
 
 var songElements = document.getElementsByClassName('song');
