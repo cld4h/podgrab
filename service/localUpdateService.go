@@ -58,8 +58,8 @@ func fillInPodcastItem(folder string, filename string, filesize int64, podcast *
 	return podcastItem
 }
 
-func getPodcastItemByTitle(title string, podcastItem *db.PodcastItem) error {
-	result := db.DB.Preload(clause.Associations).First(&podcastItem, "title=?", title)
+func getPodcastItemByPodcastIdAndTitle(title string, podcastId string, podcastItem *db.PodcastItem) error {
+	result := db.DB.Preload(clause.Associations).Where(&db.PodcastItem{PodcastID: podcastId}).First(&podcastItem, "title=?", title)
 	return result.Error
 }
 
@@ -88,7 +88,7 @@ func CreatePodcastItems(podcast *db.Podcast) {
 		strings.HasSuffix(filename, ".wav") ||
 		strings.HasSuffix(filename, ".flac") {
 			var podcastItem db.PodcastItem
-			err := getPodcastItemByTitle(strings.Split(filename,".")[0], &podcastItem)
+			err := getPodcastItemByPodcastIdAndTitle(strings.Split(filename,".")[0], podcast.ID, &podcastItem)
 			if errors.Is(err, gorm.ErrRecordNotFound){
 				podcastItem = fillInPodcastItem(folder,filename, filesize, podcast)
 				db.CreatePodcastItem(&podcastItem)
