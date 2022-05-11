@@ -240,6 +240,6 @@ func intiCron() {
 func assetEnv() {
 	log.Println("Config Dir: ", os.Getenv("CONFIG"))
 	log.Println("Assets Dir: ", os.Getenv("DATA"))
-    log.Println("Bind Address: ", os.Getenv("BIND_ADDR"))
+    	log.Println("Bind Address: ", os.Getenv("BIND_ADDR"))
 	log.Println("Check Frequency (mins): ", os.Getenv("CHECK_FREQUENCY"))
 }
