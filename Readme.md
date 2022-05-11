@@ -136,11 +136,11 @@ Although personally I feel that using the docker container is the best way of us
 [Build from source / Ubuntu Guide](docs/ubuntu-install.md)
 ### Environment Variables
 
-| Name            | Description                                                             | Default |
-| --------------- | ----------------------------------------------------------------------- | ------- |
-| CHECK_FREQUENCY | How frequently to check for new episodes and missing files (in minutes) | 30      |
-| PASSWORD        | Set to some non empty value to enable Basic Authentication, username `podgrab`|(empty)|
-| PORT            | Change the internal port of the application. If you change this you might have to change your docker configuration as well | (empty) |  
+| Name            | Description                                                                                                                  | Default          |
+| --------------- | -----------------------------------------------------------------------                                                      | -------          |
+| CHECK_FREQUENCY | How frequently to check for new episodes and missing files (in minutes)                                                      | 30               |
+| PASSWORD        | Set to some non empty value to enable Basic Authentication, username `podgrab`                                               | (empty)          |
+| BIND_ADDR       | Change the binding address of the application. If you change this you might have to change your docker configuration as well | "127.0.0.1:1251" |
 
 ### Setup
 
@@ -162,7 +162,7 @@ Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 - [x] OPML import
 - [x] OPML export
 - [x] In built podcast player
-- [ ] Set ID3 tags if not set 
+- [ ] Set ID3 tags if not set
 - [ ] Filtering and Sorting options
 - [ ] Native installer for Windows/Linux/MacOS
 
