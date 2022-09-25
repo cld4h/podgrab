@@ -458,7 +458,9 @@ func createRss(items []db.PodcastItem, title, description, image string, c *gin.
 	for _, item := range items {
 		rssItem := model.RssItem{
 			Title:       item.Title,
-			Description: item.Summary,
+			Description: model.RssItemDescription{
+				Text: item.Summary,
+			},
 			Summary:     item.Summary,
 			Image: model.RssItemImage{
 				Text: item.Title,

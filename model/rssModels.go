@@ -32,7 +32,7 @@ type RssChannel struct {
 type RssItem struct {
 	Text        string           `xml:",chardata"`
 	Title       string           `xml:"title"`
-	Description string           `xml:"description"`
+	Description RssItemDescription `xml:"description"`
 	Encoded     string           `xml:"encoded"`
 	Summary     string           `xml:"summary"`
 	EpisodeType string           `xml:"episodeType"`
@@ -45,6 +45,11 @@ type RssItem struct {
 	Enclosure   RssItemEnclosure `xml:"enclosure"`
 	Link        string           `xml:"link"`
 	Episode     string           `xml:"episode"`
+}
+
+type RssItemDescription struct {
+	XMLName xml.Name `xml:"description"`
+	Text    string   `xml:",cdata"`
 }
 
 type RssItemEnclosure struct {
