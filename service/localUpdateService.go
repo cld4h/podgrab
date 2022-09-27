@@ -37,10 +37,21 @@ func fillInPodcastItem(folder string, filename string, filesize int64, podcast *
 	itemTitle := strings.Split(filename,".")[0]
 	downloadPath := path.Join(folder, filename)
 	imagePath := path.Join(folder, "folder.jpg")
+	summaryPath := path.Join(folder, itemTitle+".txt")
+	_, err := os.Stat(summaryPath);
+	var summary string;
+	if err != nil {
+		//Summary not exists
+		summary = itemTitle
+	}else{
+		//Summary exitst
+		content, _ := os.ReadFile(summaryPath)
+		summary = string(content)
+	}
 	podcastItem := db.PodcastItem{
 		PodcastID:	podcast.ID,
 		Title:     	itemTitle,
-		Summary:   	itemTitle,
+		Summary:   	summary,
 		EpisodeType: 	"full",
 		Duration:	0,
 		PubDate:	time.Now(),
