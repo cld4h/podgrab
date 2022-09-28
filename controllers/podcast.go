@@ -647,3 +647,34 @@ func UpdateSetting(c *gin.Context) {
 	}
 
 }
+
+func UpdateSummaryForPodcastById(c *gin.Context) {
+	var searchByIdQuery SearchByIdQuery
+	if c.ShouldBindUri(&searchByIdQuery) == nil {
+
+		var podcastItems []db.PodcastItem
+
+		err := db.GetAllPodcastItemsByPodcastId(searchByIdQuery.Id, &podcastItems)
+		fmt.Println(err)
+
+		for _, item := range podcastItems{
+			download_path := item.DownloadPath
+			download_dir, audio_file_name := path.Split(download_path)
+			summary_file_name := strings.Split(audio_file_name, ".")[0]+".txt"
+			id := item.ID
+
+			summaryPath := path.Join(download_dir, summary_file_name)
+			_, err := os.Stat(summaryPath);
+			if err == nil {
+				//Summary exitst
+				content, _ := os.ReadFile(summaryPath)
+				summary := string(content)
+				db.UpdatePodcastItemSummary(id, summary)
+			}
+		}
+
+		c.JSON(200, gin.H{"message": "Success"})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+	}
+}

@@ -161,6 +161,7 @@ func main() {
 	router.GET("/podcasts/:id/pause", controllers.PausePodcastById)
 	router.GET("/podcasts/:id/unpause", controllers.UnpausePodcastById)
 	router.GET("/podcasts/:id/rss", controllers.GetRssForPodcastById)
+	router.GET("/podcasts/:id/summary", controllers.UpdateSummaryForPodcastById)
 
 	router.GET("/podcastitems", controllers.GetAllPodcastItems)
 	router.GET("/podcastitems/:id", controllers.GetPodcastItemById)

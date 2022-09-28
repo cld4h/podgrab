@@ -204,6 +204,11 @@ func UpdatePodcastItemFileSize(podcastItemId string, size int64) error {
 	return result.Error
 }
 
+func UpdatePodcastItemSummary(podcastItemId string, summary string) error {
+	result := DB.Model(PodcastItem{}).Where("id=?", podcastItemId).Update("summary", summary)
+	return result.Error
+}
+
 func GetAllPodcastItemsWithoutImage() (*[]PodcastItem, error) {
 	var podcastItems []PodcastItem
 	result := DB.Preload(clause.Associations).Where("local_image is ?", "").Where("image != ?", "").Where("download_status=?", Downloaded).Order("created_at desc").Find(&podcastItems)
@@ -252,16 +257,16 @@ func GetEpisodeNumber(podcastItemId, podcastId string) (int, error) {
 	var id string
 	var sequence int
 	row := DB.Raw(`;With cte as(
-		SELECT 
-			id, 
-			RANK() OVER (ORDER BY pub_date) as sequence 
-		FROM 
+		SELECT
+			id,
+			RANK() OVER (ORDER BY pub_date) as sequence
+		FROM
 			podcast_items
 		WHERE
 			podcast_id=?
 	)
-	select * 
-	from cte 
+	select *
+	from cte
 	where id = ?
 	`, podcastId, podcastItemId).Row()
 	error := row.Scan(&id, &sequence)
