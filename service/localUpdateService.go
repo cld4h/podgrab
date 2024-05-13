@@ -34,6 +34,8 @@ func CreatePodcast(title string) (db.Podcast, error){
 }
 
 func fillInPodcastItem(folder string, filename string, filesize int64, podcast *db.Podcast) db.PodcastItem{
+	setting := db.GetOrCreateSetting()
+	baseURL := setting.BaseUrl
 	itemTitle := strings.Split(filename,".")[0]
 	downloadPath := path.Join(folder, filename)
 	imagePath := path.Join(folder, "folder.jpg")
@@ -57,7 +59,7 @@ func fillInPodcastItem(folder string, filename string, filesize int64, podcast *
 		PubDate:	time.Now(),
 		FileURL:	"",
 		GUID:		"",
-		Image:		"",
+		Image:		fmt.Sprintf("%s/podcasts/%s/image", baseURL, podcast.ID),
 		DownloadDate:	time.Now(),
 		DownloadPath:	downloadPath,
 		DownloadStatus:	db.Downloaded,
