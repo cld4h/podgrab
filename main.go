@@ -228,7 +228,7 @@ func intiCron() {
 	}
 	service.UnlockMissedJobs()
 	//gocron.Every(uint64(checkFrequency)).Minutes().Do(service.DownloadMissingEpisodes)
-	gocron.Every(uint64(checkFrequency)).Minutes().Do(service.RefreshEpisodes)
+	//gocron.Every(uint64(checkFrequency)).Minutes().Do(service.RefreshEpisodes)
 	gocron.Every(uint64(checkFrequency)).Minutes().Do(service.CheckMissingFiles)
 	gocron.Every(uint64(checkFrequency) * 2).Minutes().Do(service.UnlockMissedJobs)
 	gocron.Every(uint64(checkFrequency) * 3).Minutes().Do(service.UpdateAllFileSizes)
