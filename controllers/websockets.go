@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,6 +18,14 @@ type EnqueuePayload struct {
 var wsupgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	//Return true from the CheckOrigin function if the origin is the trusted site. If you're behind a reverse proxy (e.g. nginx) please modify the "Origin" accordingly:
+	//e.g. in nginx: (Assuming BIND_ADDR is 127.0.0.1:1251)
+	//proxy_set_header Origin http://127.0.0.1:1251;
+	CheckOrigin: func(r *http.Request) bool {
+		origin := r.Header.Get("Origin")
+		//fmt.Println(origin) //debug
+    	return origin == "http://"+os.Getenv("BIND_ADDR")
+	},
 }
 
 var activePlayers = make(map[*websocket.Conn]string)
