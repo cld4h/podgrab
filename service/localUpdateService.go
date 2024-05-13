@@ -3,9 +3,9 @@ package service
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
+	"slices"
 	"strings"
 	"time"
 
@@ -83,14 +83,19 @@ func CreatePodcastItems(podcast *db.Podcast) {
 
 	folder := path.Join(dataPath, title)
 
-	files, err := ioutil.ReadDir(folder)
+	files, err := os.ReadDir(folder)
 	if err != nil {
 		fmt.Println("ReadDir: ", err)
 	}
 
-	for _, fInfo := range files {
-		isdir:= fInfo.IsDir()
-		filename := fInfo.Name()
+	slices.Reverse(files)
+	for _, fEntry:= range files {
+		isdir:= fEntry.IsDir()
+		filename := fEntry.Name()
+		fInfo, err := fEntry.Info()
+		if err != nil {
+			fmt.Println("Read File Info Error: ", err)
+		}
 		filesize := fInfo.Size()
 		if !isdir &&
 		strings.HasSuffix(filename, ".m4a") ||
@@ -167,7 +172,7 @@ func CheckNewFolders() {
 	}
 
 	dataPath := os.Getenv("DATA")
-	files, err := ioutil.ReadDir(dataPath)
+	files, err := os.ReadDir(dataPath)
 	if err != nil {
 		fmt.Println("ReadDir: ", err)
 	}
