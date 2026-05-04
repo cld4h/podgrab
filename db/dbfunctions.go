@@ -29,6 +29,22 @@ func GetAllPodcasts(podcasts *[]Podcast, sorting string) error {
 	result := DB.Preload("Tags").Order(sorting).Find(&podcasts)
 	return result.Error
 }
+func GetLimitedPodcasts(podcasts *[]Podcast, sorting string, limit int) error {
+	if sorting == "" {
+		sorting = "created_at"
+	}
+	result := DB.Preload("Tags").Order(sorting).Limit(limit).Find(&podcasts)
+	return result.Error
+}
+func GetPaginatedPodcasts(podcasts *[]Podcast, sorting string, page int, count int) (int, error) {
+	if sorting == "" {
+		sorting = "created_at"
+	}
+	var totalCount int64
+	DB.Model(&Podcast{}).Count(&totalCount)
+	result := DB.Preload("Tags").Order(sorting).Limit(count).Offset((page - 1) * count).Find(&podcasts)
+	return int(totalCount), result.Error
+}
 func GetAllPodcastItems(podcasts *[]PodcastItem) error {
 	result := DB.Preload("Podcast").Order("pub_date desc").Find(&podcasts)
 	return result.Error

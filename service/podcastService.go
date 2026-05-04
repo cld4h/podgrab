@@ -5,13 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-    "crypto/tls"
+	"crypto/tls"
 
 	"github.com/TheHippo/podcastindex"
 	"github.com/akhilrex/podgrab/db"
@@ -107,6 +108,73 @@ func GetAllPodcasts(sorting string) *[]db.Podcast {
 		toReturn = append(toReturn, podcast)
 	}
 	return &toReturn
+}
+func GetLimitedPodcasts(sorting string, limit int) *[]db.Podcast {
+	var podcasts []db.Podcast
+	db.GetLimitedPodcasts(&podcasts, sorting, limit)
+
+	stats, _ := db.GetPodcastEpisodeStats()
+
+	type Key struct {
+		PodcastID      string
+		DownloadStatus db.DownloadStatus
+	}
+	countMap := make(map[Key]int)
+	sizeMap := make(map[Key]int64)
+	for _, stat := range *stats {
+		countMap[Key{stat.PodcastID, stat.DownloadStatus}] = stat.Count
+		sizeMap[Key{stat.PodcastID, stat.DownloadStatus}] = stat.Size
+
+	}
+	var toReturn []db.Podcast
+	for _, podcast := range podcasts {
+		podcast.DownloadedEpisodesCount = countMap[Key{podcast.ID, db.Downloaded}]
+		podcast.DownloadingEpisodesCount = countMap[Key{podcast.ID, db.NotDownloaded}]
+		podcast.AllEpisodesCount = podcast.DownloadedEpisodesCount + podcast.DownloadingEpisodesCount + countMap[Key{podcast.ID, db.Deleted}]
+
+		podcast.DownloadedEpisodesSize = sizeMap[Key{podcast.ID, db.Downloaded}]
+		podcast.DownloadingEpisodesSize = sizeMap[Key{podcast.ID, db.NotDownloaded}]
+		podcast.AllEpisodesSize = podcast.DownloadedEpisodesSize + podcast.DownloadingEpisodesSize + sizeMap[Key{podcast.ID, db.Deleted}]
+
+		toReturn = append(toReturn, podcast)
+	}
+	return &toReturn
+}
+func GetPaginatedPodcasts(sorting string, page int, count int) (*[]db.Podcast, int, int) {
+	var podcasts []db.Podcast
+	totalCount, err := db.GetPaginatedPodcasts(&podcasts, sorting, page, count)
+	if err != nil {
+		return &[]db.Podcast{}, 0, 0
+	}
+
+	totalPages := int(math.Ceil(float64(totalCount) / float64(count)))
+
+	stats, _ := db.GetPodcastEpisodeStats()
+
+	type Key struct {
+		PodcastID      string
+		DownloadStatus db.DownloadStatus
+	}
+	countMap := make(map[Key]int)
+	sizeMap := make(map[Key]int64)
+	for _, stat := range *stats {
+		countMap[Key{stat.PodcastID, stat.DownloadStatus}] = stat.Count
+		sizeMap[Key{stat.PodcastID, stat.DownloadStatus}] = stat.Size
+
+	}
+	var toReturn []db.Podcast
+	for _, podcast := range podcasts {
+		podcast.DownloadedEpisodesCount = countMap[Key{podcast.ID, db.Downloaded}]
+		podcast.DownloadingEpisodesCount = countMap[Key{podcast.ID, db.NotDownloaded}]
+		podcast.AllEpisodesCount = podcast.DownloadedEpisodesCount + podcast.DownloadingEpisodesCount + countMap[Key{podcast.ID, db.Deleted}]
+
+		podcast.DownloadedEpisodesSize = sizeMap[Key{podcast.ID, db.Downloaded}]
+		podcast.DownloadingEpisodesSize = sizeMap[Key{podcast.ID, db.NotDownloaded}]
+		podcast.AllEpisodesSize = podcast.DownloadedEpisodesSize + podcast.DownloadingEpisodesSize + sizeMap[Key{podcast.ID, db.Deleted}]
+
+		toReturn = append(toReturn, podcast)
+	}
+	return &toReturn, totalCount, totalPages
 }
 
 func AddOpml(content string) error {

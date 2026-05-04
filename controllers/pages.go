@@ -49,10 +49,39 @@ func AddPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "addPodcast.html", gin.H{"title": "Add Podcast", "setting": setting, "searchOptions": searchOptions})
 }
 func HomePage(c *gin.Context) {
-	//var podcasts []db.Podcast
-	podcasts := service.GetAllPodcasts("")
-	setting := c.MustGet("setting").(*db.Setting)
-	c.HTML(http.StatusOK, "index.html", gin.H{"title": "Podgrab", "podcasts": podcasts, "setting": setting})
+	var pagination model.Pagination
+	if c.ShouldBindQuery(&pagination) == nil {
+		var page, count int
+		if page = pagination.Page; page == 0 {
+			page = 1
+		}
+		if count = pagination.Count; count == 0 {
+			count = 20
+		}
+		podcasts, totalCount, totalPages := service.GetPaginatedPodcasts("", page, count)
+		nextPage, previousPage := 0, 0
+		if page < totalPages {
+			nextPage = page + 1
+		}
+		if page > 1 {
+			previousPage = page - 1
+		}
+		setting := c.MustGet("setting").(*db.Setting)
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title":        "Podgrab",
+			"podcasts":     podcasts,
+			"setting":      setting,
+			"page":         page,
+			"count":        count,
+			"totalCount":   totalCount,
+			"totalPages":   totalPages,
+			"nextPage":     nextPage,
+			"previousPage": previousPage,
+			"countOptions": []int{10, 20, 30, 40, 50, 100},
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+	}
 }
 func PodcastPage(c *gin.Context) {
 	var searchByIdQuery SearchByIdQuery

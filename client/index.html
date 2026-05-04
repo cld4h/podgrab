@@ -291,6 +291,57 @@
       </template>
     </div>
 
+    <div class="row">
+      <div class="columns twelve" style="text-align: center">
+        {{if .previousPage }}
+        <a
+          href="?page=1&count={{.count}}"
+          class="button"
+          >First</a
+        >
+        {{end}}
+        {{if .previousPage }}
+        <a
+          href="?page={{.previousPage}}&count={{.count}}"
+          class="button"
+          >Previous</a
+        >
+        {{end}}
+
+        <select name="page" id="pageDdl">
+          {{ $page:=.page }}
+          {{range $y := intRange 1 .totalPages}}
+            <option {{if eq $page $y }} selected="selected" {{end}}}>{{$y}}</option>
+          {{end}}
+        </select>
+
+        {{if .nextPage }}
+        <a
+          href="?page={{.nextPage}}&count={{.count}}"
+          class="button"
+          >Next</a
+        >
+        {{end}}
+        {{if gt .totalPages .page }}
+
+        <a
+          href="?page={{.totalPages}}&count={{.count}}"
+          class="button"
+          >Last</a
+        >
+        {{end}}
+
+        &nbsp;&nbsp;
+        Per page:
+        <select name="count" id="countDdl">
+          {{ $currentCount:=.count }}
+          {{range $c := .countOptions}}
+            <option {{if eq $currentCount $c }} selected="selected" {{end}}>{{$c}}</option>
+          {{end}}
+        </select>
+      </div>
+    </div>
+
     <template v-if="allPodcasts.length && !podcasts.length">
       <div class="welcome">
         <h5>No results!</h5>
@@ -732,6 +783,30 @@
           trigger:'click',
           interactive: true
           })
+
+          var pageDdl = document.getElementById('pageDdl');
+          if(pageDdl){
+            pageDdl.addEventListener('change', function() {
+              var currentPage = {{.page}};
+              if(parseInt(this.value)===currentPage){
+                return;
+              }
+              var queryParams = new URLSearchParams(window.location.search);
+              queryParams.set("page", this.value);
+              queryParams.set("count", {{.count}});
+              window.location = window.location.origin+window.location.pathname+"?"+queryParams.toString();
+            });
+          }
+
+          var countDdl = document.getElementById('countDdl');
+          if(countDdl){
+            countDdl.addEventListener('change', function() {
+              var queryParams = new URLSearchParams(window.location.search);
+              queryParams.set("count", this.value);
+              queryParams.set("page", "1");
+              window.location = window.location.origin+window.location.pathname+"?"+queryParams.toString();
+            });
+          }
         })
         },
         watch:{
