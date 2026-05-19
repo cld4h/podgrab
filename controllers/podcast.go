@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
@@ -455,6 +456,13 @@ func getBaseUrl(c *gin.Context) string {
 func createRss(items []db.PodcastItem, title, description, image string, c *gin.Context) model.RssPodcastData {
 	var rssItems []model.RssItem
 	url := getBaseUrl(c)
+
+	authSuffix := ""
+	if pass := os.Getenv("PASSWORD"); pass != "" {
+		token := base64.StdEncoding.EncodeToString([]byte("podgrab:" + pass))
+		authSuffix = "?auth=" + token
+	}
+
 	for _, item := range items {
 		rssItem := model.RssItem{
 			Title:       item.Title,
@@ -464,12 +472,12 @@ func createRss(items []db.PodcastItem, title, description, image string, c *gin.
 			Summary:     item.Summary,
 			Image: model.RssItemImage{
 				Text: item.Title,
-				Href: fmt.Sprintf("%s/podcastitems/%s/image", url, item.ID),
-				URL: fmt.Sprintf("%s/podcastitems/%s/image", url, item.ID),
+				Href: fmt.Sprintf("%s/podcastitems/%s/image%s", url, item.ID, authSuffix),
+				URL: fmt.Sprintf("%s/podcastitems/%s/image%s", url, item.ID, authSuffix),
 			},
 			EpisodeType: item.EpisodeType,
 			Enclosure: model.RssItemEnclosure{
-				URL:    fmt.Sprintf("%s/podcastitems/%s/file", url, item.ID),
+				URL:    fmt.Sprintf("%s/podcastitems/%s/file%s", url, item.ID, authSuffix),
 				Length: fmt.Sprint(item.FileSize),
 				Type:   "audio/mpeg",
 			},

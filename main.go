@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/subtle"
+	"encoding/base64"
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"strconv"
@@ -136,7 +139,7 @@ func main() {
 	pass := os.Getenv("PASSWORD")
 	var router *gin.RouterGroup
 	if pass != "" {
-		router = r.Group("/", gin.BasicAuth(gin.Accounts{
+		router = r.Group("/", customBasicAuth(gin.Accounts{
 			"podgrab": pass,
 		}))
 	} else {
@@ -243,4 +246,38 @@ func assetEnv() {
 	log.Println("Assets Dir: ", os.Getenv("DATA"))
     	log.Println("Bind Address: ", os.Getenv("BIND_ADDR"))
 	log.Println("Check Frequency (mins): ", os.Getenv("CHECK_FREQUENCY"))
+}
+
+func customBasicAuth(accounts gin.Accounts) gin.HandlerFunc {
+	expectedTokens := make(map[string]string)
+	for user, pass := range accounts {
+		token := base64.StdEncoding.EncodeToString([]byte(user + ":" + pass))
+		expectedTokens[token] = user
+	}
+
+	return func(c *gin.Context) {
+		// Try standard Basic Auth header first
+		user, password, hasAuth := c.Request.BasicAuth()
+		if hasAuth {
+			expectedPass, userExists := accounts[user]
+			if userExists && subtle.ConstantTimeCompare([]byte(password), []byte(expectedPass)) == 1 {
+				c.Set("user", user)
+				c.Next()
+				return
+			}
+		}
+
+		// Fallback: check ?auth= query parameter token
+		authToken := c.Query("auth")
+		if authToken != "" {
+			if user, ok := expectedTokens[authToken]; ok {
+				c.Set("user", user)
+				c.Next()
+				return
+			}
+		}
+
+		c.Header("WWW-Authenticate", "Basic realm=\"Authorization Required\"")
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
 }
