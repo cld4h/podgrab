@@ -3,20 +3,24 @@ package model
 import "encoding/xml"
 
 //PodcastData is
+
 type RssPodcastData struct {
-	XMLName    xml.Name   `xml:"rss"`
-	Text       string     `xml:",chardata"`
-	Itunes     string     `xml:"itunes,attr"`
-	Atom       string     `xml:"atom,attr"`
-	Media      string     `xml:"media,attr"`
-	Psc        string     `xml:"psc,attr"`
-	Omny       string     `xml:"omny,attr"`
-	Content    string     `xml:"content,attr"`
-	Googleplay string     `xml:"googleplay,attr"`
-	Acast      string     `xml:"acast,attr"`
-	Version    string     `xml:"version,attr"`
-	Channel    RssChannel `xml:"channel"`
+    XMLName xml.Name `xml:"rss"`
+
+    Itunes     string `xml:"xmlns:itunes,attr,omitempty"`
+    Atom       string `xml:"xmlns:atom,attr,omitempty"`
+    Media      string `xml:"xmlns:media,attr,omitempty"`
+    Psc        string `xml:"xmlns:psc,attr,omitempty"`
+    Omny       string `xml:"xmlns:omny,attr,omitempty"`
+    Content    string `xml:"xmlns:content,attr,omitempty"`
+    Googleplay string `xml:"xmlns:googleplay,attr,omitempty"`
+    Acast      string `xml:"xmlns:acast,attr,omitempty"`
+
+    Version string `xml:"version,attr"`
+
+    Channel RssChannel `xml:"channel"`
 }
+
 type RssChannel struct {
 	Text        string       `xml:",chardata"`
 	Language    string       `xml:"language"`
@@ -41,7 +45,7 @@ type RssItem struct {
 	Guid        RssItemGuid      `xml:"guid"`
 	ClipId      string           `xml:"clipId"`
 	PubDate     string           `xml:"pubDate"`
-	Duration    string           `xml:"duration"`
+	Duration    string           `xml:"itunes:duration"`
 	Enclosure   RssItemEnclosure `xml:"enclosure"`
 	Link        string           `xml:"link"`
 	Episode     string           `xml:"episode"`
